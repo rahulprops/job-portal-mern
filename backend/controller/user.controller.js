@@ -75,3 +75,51 @@ import bcrypt from 'bcrypt'
         return res.status(500).json({message:`server error ${error.message}`})
     }
   }
+
+  //! updateProfile
+
+  export const updateProfile = async (req,res)=>{
+    const {fullname,email,phoneNumber,bio,skills}=req.body;
+      if(!fullname || !email || !phoneNumber || !bio || !skills){
+         return res.status(400).json({
+            message:"Someting is missing"
+         })
+      }
+      const skillsArrary=skills.split(",");
+      const userId=req.id;  
+     try {
+         
+         let user = await User.findById(userId)
+
+         if(!user){
+            return res.status(400).json({message:" user not found"})
+         }
+          
+
+         // updating data
+         user.fullname=fullname,
+         user.email=email,
+         user.phoneNumber=phoneNumber,
+         user.profile.bio=bio,
+         user.profile.skills=skillsArrary
+
+         // resume
+
+         await user.save()
+
+         user={
+            _id:user._id,
+            fullname:user.fullname,
+            email:user.email,
+            phoneNumber:user.phoneNumber,
+            role:user.role,
+            profile:user.profile
+         }
+         return res.status(200).json({
+            message:"profile updated sucessfuly",
+            user
+         })
+     } catch (error) {
+         return res.status(500).json({message:`server error ${error.message}`})
+     }
+  }
