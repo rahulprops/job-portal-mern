@@ -35,3 +35,34 @@ import bcrypt from 'bcrypt'
         return res.status(500).json({message:`server error ${error.message}`})
     }
  }
+
+ //! login user
+ export const login= async (req,res)=>{
+    const {email,password,role}=req.body;
+    if(!email || !password || !role){
+        return res.status(400).json({message:"all fields required"})
+    }
+    if(!validator.isEmail(email)){
+        return res.status(400).json({message:"please enter valid email "})
+    }
+    try {
+        const isUser= await User.findOne({email})
+        if(!isUser){
+            return res.status(404).json({message:"user not found"})
+        }
+        // password check
+        const isValidPassword=await bcrypt.compare(password,isUser.password)
+        
+        if(isValidPassword){
+              if(role!== isUser.role){
+                return res.status(400).json({message:"Account does't exist with current role"})
+              }
+
+            return res.status(200).json({message:"user login sucessful "})
+        }else{
+            return res.status(400).json({message:"password worng"})
+        }
+    } catch (error) {
+         return res.status(500).json({message:`server error ${error.message}`})
+    }
+ }
