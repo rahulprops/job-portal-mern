@@ -3,7 +3,7 @@ import 'dotenv/config.js'
 const dbConntect=()=>{
     try {
         const db = mongoose.connect(process.env.DB)
-        if(db){
+        if(db){                                                     
             console.log("database connect sucessful")
         }else{
             console.log("database connect failed")
